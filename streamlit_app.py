@@ -1,38 +1,34 @@
-from collections import namedtuple
-import altair as alt
-import math
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
-"""
-# Welcome to Streamlit!
+# Generate data and PCA
+df = pd.read_csv("pca.csv")
+zn = df[["z", "n"]].values
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
-
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
-
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+fig = go.Figure()
 
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+# colors = embs_pca[:, 2]
+st.title("Interactive PCA Plot with Streamlit")
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+# Sliders for selecting PCs
 
-    points_per_turn = total_points / num_turns
+x_pc = st.slider("Select PC for X-axis:", 1, 10, 1)
+y_pc = st.slider("Select PC for Y-axis:", 1, 10, 2)
+color = st.slider("Select PC for color:", 1, 10, 3)
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+fig = px.scatter(
+        df,
+        x=f"PC{x_pc}",
+        y=f"PC{y_pc}",
+        hover_data=["z", "n"],
+        labels={"x": f"PC{x_pc}", "y": f"PC{y_pc}"},
+        color=f"PC{color}",
+        color_continuous_scale="rdbu"
+    )
+
+st.plotly_chart(fig)
+
