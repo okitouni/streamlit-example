@@ -6,10 +6,11 @@ import streamlit as st
 # Generate data and PCA
 df = pd.read_csv("pca.csv")
 
-st.title("Interactive PCA Plot with Streamlit")
-
+st.title("Select PCA components to plot")
 # Sliders for selecting PCs
 st.write("## 2D PCA Plot")
+
+# empty_line = st.empty() # this is where the plot will be rendered
 x_pc = st.slider("Select PC for X-axis:", 1, 10, 1)
 y_pc = st.slider("Select PC for Y-axis:", 1, 10, 2)
 color = st.slider("Select PC for color:", 1, 10, 3)
@@ -39,6 +40,7 @@ fig = px.scatter_3d(
     hover_data=["z", "n"],
     color=f"PC{color}",
     color_continuous_scale="rdbu",
+    # size=[2] * len(df),
 )
 
 st.plotly_chart(fig)
